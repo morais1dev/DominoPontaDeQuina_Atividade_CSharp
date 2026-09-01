@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.15" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
@@ -16,7 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DominoPontaDeQuina.App\DominoPontaDeQuina.App.csproj" />
     <ProjectReference Include="..\DominoPontaDeQuina.Core\DominoPontaDeQuina.Core.csproj" />
+    <ProjectReference Include="..\DominoPontaDeQuina.Domain\DominoPontaDeQuina.Domain.csproj" />
+    <ProjectReference Include="..\DominoPontaDeQuina.Repository\DominoPontaDeQuina.Repository.csproj" />
+    <ProjectReference Include="..\DominoPontaDeQuina.Services\DominoPontaDeQuina.Services.csproj" />
   </ItemGroup>
 
 </Project>

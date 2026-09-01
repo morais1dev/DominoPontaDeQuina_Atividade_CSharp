@@ -17,10 +17,57 @@ namespace DominoPontaDeQuina.Repository.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
 
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Jogada", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("JogadorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Lado")
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PassouVez")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PecaValorA")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PecaValorB")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PontosGerados")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("RegistradaEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("RodadaId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Sequencia")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JogadorId");
+
+                    b.HasIndex("RodadaId", "Sequencia")
+                        .IsUnique();
+
+                    b.ToTable("Jogadas");
+                });
+
             modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Jogador", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NomeExibicao")
@@ -33,7 +80,8 @@ namespace DominoPontaDeQuina.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsuarioId");
+                    b.HasIndex("UsuarioId", "NomeExibicao")
+                        .IsUnique();
 
                     b.ToTable("Jogadores");
                 });
@@ -56,6 +104,9 @@ namespace DominoPontaDeQuina.Repository.Migrations
                     b.Property<int>("Posicao")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid?>("TimePartidaId")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("Vencedor")
                         .HasColumnType("INTEGER");
 
@@ -63,7 +114,10 @@ namespace DominoPontaDeQuina.Repository.Migrations
 
                     b.HasIndex("JogadorId");
 
-                    b.HasIndex("PartidaId");
+                    b.HasIndex("TimePartidaId");
+
+                    b.HasIndex("PartidaId", "JogadorId")
+                        .IsUnique();
 
                     b.ToTable("ParticipacoesPartida");
                 });
@@ -80,12 +134,92 @@ namespace DominoPontaDeQuina.Repository.Migrations
                     b.Property<DateTime>("IniciadoEm")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("PontuacaoAlvo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IniciadoEm");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("Partidas");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Rodada", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("FinalizadaEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("IniciadaEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("JogadorVencedorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Numero")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("PartidaId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PontuacaoVencedor")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TipoFinalizacao")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JogadorVencedorId");
+
+                    b.HasIndex("PartidaId", "Numero")
+                        .IsUnique();
+
+                    b.ToTable("Rodadas");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.TimePartida", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PartidaId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Pontuacao")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Vencedor")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Partidas");
+                    b.HasIndex("PartidaId", "Nome")
+                        .IsUnique();
+
+                    b.ToTable("TimesPartida");
                 });
 
             modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Usuario", b =>
@@ -114,7 +248,29 @@ namespace DominoPontaDeQuina.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Jogada", b =>
+                {
+                    b.HasOne("DominoPontaDeQuina.Domain.Entities.Jogador", "Jogador")
+                        .WithMany("Jogadas")
+                        .HasForeignKey("JogadorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DominoPontaDeQuina.Domain.Entities.Rodada", "Rodada")
+                        .WithMany("Jogadas")
+                        .HasForeignKey("RodadaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jogador");
+
+                    b.Navigation("Rodada");
                 });
 
             modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Jogador", b =>
@@ -142,17 +298,71 @@ namespace DominoPontaDeQuina.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DominoPontaDeQuina.Domain.Entities.TimePartida", "Time")
+                        .WithMany("Participacoes")
+                        .HasForeignKey("TimePartidaId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Jogador");
+
+                    b.Navigation("Partida");
+
+                    b.Navigation("Time");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Rodada", b =>
+                {
+                    b.HasOne("DominoPontaDeQuina.Domain.Entities.Jogador", "JogadorVencedor")
+                        .WithMany("RodadasVencidas")
+                        .HasForeignKey("JogadorVencedorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("DominoPontaDeQuina.Domain.Entities.Partida", "Partida")
+                        .WithMany("Rodadas")
+                        .HasForeignKey("PartidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JogadorVencedor");
+
+                    b.Navigation("Partida");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.TimePartida", b =>
+                {
+                    b.HasOne("DominoPontaDeQuina.Domain.Entities.Partida", "Partida")
+                        .WithMany("Times")
+                        .HasForeignKey("PartidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Partida");
                 });
 
             modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Jogador", b =>
                 {
+                    b.Navigation("Jogadas");
+
                     b.Navigation("Participacoes");
+
+                    b.Navigation("RodadasVencidas");
                 });
 
             modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Partida", b =>
+                {
+                    b.Navigation("Participacoes");
+
+                    b.Navigation("Rodadas");
+
+                    b.Navigation("Times");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.Rodada", b =>
+                {
+                    b.Navigation("Jogadas");
+                });
+
+            modelBuilder.Entity("DominoPontaDeQuina.Domain.Entities.TimePartida", b =>
                 {
                     b.Navigation("Participacoes");
                 });

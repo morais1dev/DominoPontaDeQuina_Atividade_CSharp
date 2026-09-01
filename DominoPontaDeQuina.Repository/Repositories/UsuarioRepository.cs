@@ -1,10 +1,12 @@
 using DominoPontaDeQuina.Domain.Entities;
 using DominoPontaDeQuina.Repository.Context;
+using DominoPontaDeQuina.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DominoPontaDeQuina.Repository.Repositories;
 
-public class UsuarioRepository
+/// <inheritdoc cref="IUsuarioRepository"/>
+public class UsuarioRepository : IUsuarioRepository
 {
     private readonly DominoDbContext _context;
 
@@ -13,6 +15,7 @@ public class UsuarioRepository
         _context = context;
     }
 
+    /// <inheritdoc />
     public async Task<Usuario> AdicionarAsync(Usuario usuario)
     {
         _context.Usuarios.Add(usuario);
@@ -20,18 +23,21 @@ public class UsuarioRepository
         return usuario;
     }
 
+    /// <inheritdoc />
     public async Task AtualizarAsync(Usuario usuario)
     {
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task RemoverAsync(Usuario usuario)
     {
         _context.Usuarios.Remove(usuario);
         await _context.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task<Usuario?> ObterPorIdAsync(Guid id)
     {
         return await _context.Usuarios
@@ -39,18 +45,21 @@ public class UsuarioRepository
             .FirstOrDefaultAsync(usuario => usuario.Id == id);
     }
 
+    /// <inheritdoc />
     public async Task<Usuario?> ObterPorEmailAsync(string email)
     {
         return await _context.Usuarios
             .FirstOrDefaultAsync(usuario => usuario.Email == email);
     }
 
+    /// <inheritdoc />
     public async Task<bool> EmailJaCadastradoAsync(string email)
     {
         return await _context.Usuarios
             .AnyAsync(usuario => usuario.Email == email);
     }
 
+    /// <inheritdoc />
     public async Task<List<Usuario>> ListarAsync()
     {
         return await _context.Usuarios
@@ -58,6 +67,7 @@ public class UsuarioRepository
             .ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<List<Usuario>> BuscarPorNomeAsync(string trechoDoNome)
     {
         return await _context.Usuarios

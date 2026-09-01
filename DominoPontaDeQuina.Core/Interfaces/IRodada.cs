@@ -50,7 +50,7 @@ internal interface IRodada
     /// </summary>
     /// <param name="jogadores">Os jogadores participantes da rodada.</param>
     /// <param name="rodadaAnterior">A rodada anterior, quando houver, para reaproveitar informacoes de fluxo.</param>
-    public void Iniciar(ReadOnlyCollection<Jogador> jogadores, Rodada rodadaAnterior = null);
+    public void Iniciar(ReadOnlyCollection<Jogador> jogadores, Rodada? rodadaAnterior = null);
 
     /// <summary>
     /// Registra uma jogada na rodada.

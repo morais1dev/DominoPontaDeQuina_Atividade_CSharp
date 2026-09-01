@@ -18,5 +18,12 @@ public class Jogador
 
     public Usuario Usuario { get; set; } = null!;
 
+    [Required]
+    public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
+
     public ICollection<ParticipacaoPartida> Participacoes { get; set; } = new List<ParticipacaoPartida>();
+
+    public ICollection<Jogada> Jogadas { get; set; } = new List<Jogada>();
+
+    public ICollection<Rodada> RodadasVencidas { get; set; } = new List<Rodada>();
 }

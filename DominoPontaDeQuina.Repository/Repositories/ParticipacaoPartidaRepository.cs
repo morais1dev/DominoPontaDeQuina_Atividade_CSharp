@@ -1,10 +1,12 @@
 using DominoPontaDeQuina.Domain.Entities;
 using DominoPontaDeQuina.Repository.Context;
+using DominoPontaDeQuina.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DominoPontaDeQuina.Repository.Repositories;
 
-public class ParticipacaoPartidaRepository
+/// <inheritdoc cref="IParticipacaoPartidaRepository"/>
+public class ParticipacaoPartidaRepository : IParticipacaoPartidaRepository
 {
     private readonly DominoDbContext _context;
 
@@ -13,6 +15,7 @@ public class ParticipacaoPartidaRepository
         _context = context;
     }
 
+    /// <inheritdoc />
     public async Task<ParticipacaoPartida> AdicionarAsync(ParticipacaoPartida participacao)
     {
         _context.ParticipacoesPartida.Add(participacao);
@@ -20,33 +23,39 @@ public class ParticipacaoPartidaRepository
         return participacao;
     }
 
+    /// <inheritdoc />
     public async Task AtualizarAsync(ParticipacaoPartida participacao)
     {
         _context.ParticipacoesPartida.Update(participacao);
         await _context.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task RemoverAsync(ParticipacaoPartida participacao)
     {
         _context.ParticipacoesPartida.Remove(participacao);
         await _context.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task<ParticipacaoPartida?> ObterPorIdAsync(Guid id)
     {
         return await _context.ParticipacoesPartida
             .FirstOrDefaultAsync(participacao => participacao.Id == id);
     }
 
+    /// <inheritdoc />
     public async Task<List<ParticipacaoPartida>> ListarPorPartidaAsync(Guid partidaId)
     {
         return await _context.ParticipacoesPartida
             .Include(participacao => participacao.Jogador)
+            .Include(participacao => participacao.Time)
             .Where(participacao => participacao.PartidaId == partidaId)
             .OrderBy(participacao => participacao.Posicao)
             .ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<List<ParticipacaoPartida>> ListarPorJogadorAsync(Guid jogadorId)
     {
         return await _context.ParticipacoesPartida
@@ -56,6 +65,7 @@ public class ParticipacaoPartidaRepository
             .ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<ParticipacaoPartida?> ObterVencedorDaPartidaAsync(Guid partidaId)
     {
         return await _context.ParticipacoesPartida
@@ -63,12 +73,21 @@ public class ParticipacaoPartidaRepository
             .FirstOrDefaultAsync(participacao => participacao.PartidaId == partidaId && participacao.Vencedor);
     }
 
+    /// <inheritdoc />
     public async Task<int> ContarVitoriasDoJogadorAsync(Guid jogadorId)
     {
         return await _context.ParticipacoesPartida
             .CountAsync(participacao => participacao.JogadorId == jogadorId && participacao.Vencedor);
     }
 
+    /// <inheritdoc />
+    public async Task<int> ContarPartidasDoJogadorAsync(Guid jogadorId)
+    {
+        return await _context.ParticipacoesPartida
+            .CountAsync(participacao => participacao.JogadorId == jogadorId);
+    }
+
+    /// <inheritdoc />
     public async Task<int> SomarPontuacaoDoJogadorAsync(Guid jogadorId)
     {
         return await _context.ParticipacoesPartida

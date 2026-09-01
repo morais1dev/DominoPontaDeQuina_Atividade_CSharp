@@ -65,7 +65,7 @@ public class Rodada() : IRodada
     public IReadOnlyDictionary<Jogador, int> PontuacaoJogadores => _pontuacaoJogadores;
 
     /// <inheritdoc />
-    public void Iniciar(ReadOnlyCollection<Jogador> jogadores, Rodada rodadaAnterior = null)
+    public void Iniciar(ReadOnlyCollection<Jogador> jogadores, Rodada? rodadaAnterior = null)
     {
         var maosJogadores = DistribuirPecas(jogadores);
         var primeiroJogador = GetPrimeiroJogador(maosJogadores, rodadaAnterior);
@@ -179,16 +179,12 @@ public class Rodada() : IRodada
     /// <returns>O jogador que deve iniciar a rodada.</returns>
     private Jogador GetPrimeiroJogador(List<MaoJogador> jogadores, Rodada? rodadaAnterior = null)
     {
-        if (rodadaAnterior is not null)
-        {
-            return rodadaAnterior.GetVencedor();
-        }
-        else
-        {
-            var maoComSena = jogadores.FirstOrDefault(maoJogador => maoJogador.PossuiSena());
+        if (rodadaAnterior?.GetVencedor() is { } vencedorAnterior)
+            return vencedorAnterior;
 
-            return maoComSena?.Jogador ?? jogadores[0].Jogador;
-        }
+        var maoComSena = jogadores.FirstOrDefault(maoJogador => maoJogador.PossuiSena());
+
+        return maoComSena?.Jogador ?? jogadores[0].Jogador;
     }
 
     /// <summary>
@@ -242,8 +238,12 @@ public class Rodada() : IRodada
         if (somaDasPontas == 0 || somaDasPontas % DivisorDaPontuacao != 0)
             return;
 
+        var pontosDaJogada = somaDasPontas / DivisorDaPontuacao;
+
+        jogada.RegistrarPontuacao(pontosDaJogada);
+
         _pontuacaoJogadores[jogada.Jogador] =
-            ObterPontuacao(jogada.Jogador) + (somaDasPontas / DivisorDaPontuacao);
+            ObterPontuacao(jogada.Jogador) + pontosDaJogada;
     }
 
     /// <summary>
