@@ -32,6 +32,24 @@ builder.Services.AddScoped<IJogadorService, JogadorService>();
 builder.Services.AddScoped<IPartidaService, PartidaService>();
 builder.Services.AddScoped<IEstatisticasService, EstatisticasService>();
 
+// Configurar serviço de autenticação JWT
+var chaveSecreta = builder.Configuration["Jwt:ChaveSecreta"] 
+    ?? "SuaChaveSecretaMuitoSeguraComNoMinimo32Caracteres";
+var tempoExpiracao = builder.Configuration.GetValue("Jwt:TempoExpiracaoMinutos", 60);
+var emissor = builder.Configuration["Jwt:Emissor"] ?? "DominoPontaDeQuinaApp";
+var audiencia = builder.Configuration["Jwt:Audiencia"] ?? "DominoPontaDeQuinaUsers";
+
+builder.Services.AddScoped<IAuthenticationService>(provider =>
+    new AuthenticationService(chaveSecreta, tempoExpiracao, emissor, audiencia));
+
+// Registrar o helper de autenticacao JWT
+builder.Services.AddScoped(provider =>
+{
+    var usuarioService = provider.GetRequiredService<IUsuarioService>();
+    var authService = provider.GetRequiredService<IAuthenticationService>();
+    return new JwtAuthenticationHelper(usuarioService, authService);
+});
+
 builder.Services.AddScoped<AplicacaoConsole>();
 
 using var host = builder.Build();
